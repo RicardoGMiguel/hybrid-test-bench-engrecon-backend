@@ -1,0 +1,17 @@
+/**
+ *  @openapi
+ *  components:
+ *    schemas:
+ *      ServiceError:
+ *        type: object
+ *        required:
+ *          - status
+ *          - message
+ *        properties:
+ *          status:
+ *            type: string
+ *            enum: ['error']
+ *          message:
+ *            type: string
+ *
+ */

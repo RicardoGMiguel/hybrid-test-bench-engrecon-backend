@@ -1,0 +1,19 @@
+name: Tests CI
+
+on:
+  pull_request:
+    branches: [development, master, main, feat/**, refactor/**]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: export NODE_OPTIONS="--max_old_space_size=4096"
+      - run: yarn
+      - run: NODE_OPTIONS="--max_old_space_size=4096" yarn build
+      - run: NODE_OPTIONS="--max_old_space_size=4096" yarn test:ci
