@@ -9,7 +9,7 @@ export class SeedAdmin1684513445871 implements MigrationInterface {
 
     await queryRunner.query(`INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4)`, [
       'Admin',
-      'admin@empresa.com',
+      'admin@senai.com',
       password,
       UserRoles.ADMIN,
     ]);
