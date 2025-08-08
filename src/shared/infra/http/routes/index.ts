@@ -1,5 +1,4 @@
 import express, { Express } from 'express';
-import swaggerUi from 'swagger-ui-express';
 
 import swaggerSpec from '@config/swagger';
 import uploadConfig from '@config/upload';
@@ -14,7 +13,6 @@ function setupRoutes(app: Express): void {
   app.use('/app*', frontEndRoutes);
   app.use('/', healthcheckRouter);
   app.use('/api', modulesRoutes);
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.get('/docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
