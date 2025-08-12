@@ -1,11 +1,11 @@
 import { ReadlineParser, SerialPort } from 'serialport';
-import { injectable } from 'tsyringe';
+import { singleton } from 'tsyringe';
 import WebSocket, { WebSocketServer } from 'ws';
 
 import { IConnectDTO } from '../dtos/IConnectDTO';
 import IWebSocketSerialProvider from '../models/IWebSockerSerialProvider';
 
-@injectable()
+@singleton()
 class WebSocketSerialProvider implements IWebSocketSerialProvider {
   private port: SerialPort | null = null;
   private parser: ReadlineParser | null = null;
@@ -13,25 +13,40 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
 
   public onSerialData?: (data: string) => void;
 
-  public async connect({ onConnected }: IConnectDTO): Promise<void> {
-    if (this.port) throw new Error('Serial already connected');
+  private async openSerialPort(): Promise<void> {
+    if (this.port && this.port.isOpen) return; // já aberta
 
     const baudRate = Number(process.env.SERIAL_BAUD) || 115200;
+    const ports = await SerialPort.list();
+    if (ports.length === 0) throw new Error('Nenhum dispositivo serial encontrado.');
+
+    const chosenPort = ports[0].path;
+    console.log(`🔌 Abrindo porta serial: ${chosenPort}`);
+
+    await new Promise<void>((resolve, reject) => {
+      this.port = new SerialPort({ path: chosenPort, baudRate }, err => {
+        if (err) {
+          return reject(err);
+        }
+      });
+
+      this.port.once('open', () => {
+        console.log(`✔ Porta serial aberta em ${chosenPort} @ ${baudRate}bps`);
+        resolve();
+      });
+
+      this.port.once('error', reject);
+    });
+  }
+
+  public async connect({ onConnected }: IConnectDTO): Promise<void> {
+    // Abre a porta serial (reutilizando o método)
+    await this.openSerialPort();
+
     const wsPort = Number(process.env.WS_PORT) || 8080;
 
-    // Detecta automaticamente a porta
-    const ports = await SerialPort.list();
-    if (ports.length === 0) {
-      throw new Error('Nenhum dispositivo serial encontrado.');
-    }
-
-    // Escolhe a primeira porta encontrada (poderia filtrar por fabricante)
-    const chosenPort = ports[0].path;
-    console.log(`🔌 Conectando na porta: ${chosenPort}`);
-
-    // Conecta à porta serial
-    this.port = new SerialPort({ path: chosenPort, baudRate });
-    this.parser = this.port.pipe(new ReadlineParser({ delimiter: '\n' }));
+    // Garante que o parser está configurado
+    this.parser = this.port!.pipe(new ReadlineParser({ delimiter: '\n' }));
 
     // Servidor WebSocket
     this.wss = new WebSocketServer({ port: wsPort });
@@ -53,7 +68,6 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
     });
 
     console.log(`✔✔ WebSocket rodando na porta ${wsPort}`);
-    console.log(`✔✔ Serial conectada em ${chosenPort} @ ${baudRate}bps`);
     onConnected();
   }
 
@@ -63,6 +77,67 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
     this.wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message);
+      }
+    });
+  }
+
+  public async disconnect(): Promise<void> {
+    // Fecha parser antes da porta
+    if (this.parser) {
+      if (this.port) {
+        this.port.unpipe(this.parser);
+      }
+      this.parser.removeAllListeners();
+      this.parser.destroy(); // 🔹 garante destruição
+      this.parser = null;
+    }
+
+    // Fecha a porta serial
+    if (this.port) {
+      await new Promise<void>((resolve, reject) => {
+        this.port!.close(err => {
+          if (err) {
+            console.error('Erro ao fechar porta serial:', err);
+            return reject(err);
+          }
+          console.log('🔌 Porta serial fechada.');
+          resolve();
+        });
+      });
+      this.port.removeAllListeners();
+      this.port = null;
+      await new Promise(res => setTimeout(res, 300)); // 🔹 tempo para Windows
+    }
+
+    // Fecha WebSocket Server
+    if (this.wss) {
+      await new Promise<void>(res =>
+        this.wss!.close(() => {
+          console.log('🔌 WebSocket Server fechado.');
+          res();
+        }),
+      );
+      this.wss = null;
+    }
+
+    // Remove callbacks
+    this.onSerialData = undefined;
+
+    console.log('✔✔ Conexões encerradas com sucesso.');
+  }
+
+  public async sendSerialData(message: string): Promise<void> {
+    // Garante que a porta esteja aberta antes de enviar
+    console.log('port', this.port);
+    if (!this.port || !this.port.isOpen) {
+      await this.openSerialPort();
+    }
+
+    this.port!.write(message.endsWith('\n') ? message : message + '\n', err => {
+      if (err) {
+        console.error('Erro ao enviar para serial:', err.message);
+      } else {
+        console.log(`Enviado para serial: ${message}`);
       }
     });
   }

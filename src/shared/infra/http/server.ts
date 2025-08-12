@@ -7,7 +7,8 @@ import { env } from '@config/env';
 import logger from '@config/log';
 
 import '@shared/container/';
-import '../wsSerial/client';
+
+// import '../wsSerial/client';
 
 import App from './app';
 

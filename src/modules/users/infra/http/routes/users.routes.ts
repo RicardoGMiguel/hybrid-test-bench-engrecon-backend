@@ -1,17 +1,13 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
-import multer from 'multer';
 
 import UserAvatarController from '@modules/users/infra/http/controllers/UserAvatar.controller';
 import UsersController from '@modules/users/infra/http/controllers/Users.controller';
 import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
 import { UserRoles } from '@modules/users/interfaces';
-import uploadConfig from '@config/upload';
 
 const usersController = new UsersController();
 const userAvatarController = new UserAvatarController();
-
-const upload = multer(uploadConfig.multer);
 
 const usersRouter = Router();
 
@@ -243,6 +239,6 @@ usersRouter.delete(
  *          $ref: '#/components/responses/UserNotFound'
  *
  */
-usersRouter.patch('/avatar', ensureAuthenticated, upload.single('avatar'), userAvatarController.update);
+usersRouter.patch('/avatar', ensureAuthenticated, userAvatarController.update);
 
 export default usersRouter;
