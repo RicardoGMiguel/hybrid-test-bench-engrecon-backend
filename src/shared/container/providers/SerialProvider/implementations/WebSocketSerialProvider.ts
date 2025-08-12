@@ -111,12 +111,10 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
 
     // Fecha WebSocket Server
     if (this.wss) {
-      await new Promise<void>(res =>
-        this.wss!.close(() => {
-          console.log('🔌 WebSocket Server fechado.');
-          res();
-        }),
-      );
+      this.wss.clients.forEach(client => client.close());
+      this.wss.close(() => {
+        console.log('🔌 WebSocket Server fechado.');
+      });
       this.wss = null;
     }
 
@@ -128,7 +126,6 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
 
   public async sendSerialData(message: string): Promise<void> {
     // Garante que a porta esteja aberta antes de enviar
-    console.log('port', this.port);
     if (!this.port || !this.port.isOpen) {
       await this.openSerialPort();
     }

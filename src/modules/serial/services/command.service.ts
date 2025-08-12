@@ -3,9 +3,17 @@ import { inject, injectable } from 'tsyringe';
 
 import WebSocketSerialProvider from '@shared/container/providers/SerialProvider/implementations/WebSocketSerialProvider';
 
+export enum CouplingModesEnum {
+  FREE = 'FREE',
+  SAME_SPEED = 'SAME_SPEED',
+  SAME_PHASE = 'SAME_PHASE',
+}
+
 interface IRequest {
   cmd: string;
-  mode: string;
+  mode: CouplingModesEnum;
+  cardanSpeed: string;
+  rampTime: string;
 }
 
 @injectable()
@@ -15,8 +23,8 @@ class CommandService {
     private wsSerialProvider: WebSocketSerialProvider,
   ) {}
 
-  public async execute({ cmd, mode }: IRequest): Promise<string> {
-    const command = JSON.stringify({ cmd, mode });
+  public async execute({ cmd, mode, cardanSpeed, rampTime }: IRequest): Promise<string> {
+    const command = JSON.stringify({ cmd, mode, cardanSpeed, rampTime });
 
     await this.wsSerialProvider.disconnect();
 
