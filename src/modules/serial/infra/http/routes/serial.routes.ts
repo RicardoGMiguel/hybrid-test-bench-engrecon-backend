@@ -5,9 +5,11 @@ import TestController from '@modules/serial/infra/http/controllers/Test.controll
 import ensureAuthenticated from '@modules/serial/infra/http/middlewares/ensureAuthenticated';
 
 import CommandController from '../controllers/Command.controller';
+import CycleController from '../controllers/Cycle.controller';
 
 const testController = new TestController();
 const commandController = new CommandController();
+const cycleController = new CycleController();
 
 const serialRouter = Router();
 
@@ -24,6 +26,17 @@ serialRouter.post(
     },
   }),
   commandController.create,
+);
+
+serialRouter.post(
+  '/cycle/command',
+  celebrate({
+    [Segments.BODY]: {
+      cmd: Joi.string().required(),
+      cycle: Joi.string().required(),
+    },
+  }),
+  cycleController.create,
 );
 
 export default serialRouter;
