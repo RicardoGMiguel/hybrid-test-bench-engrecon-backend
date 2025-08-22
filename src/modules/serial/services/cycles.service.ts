@@ -85,6 +85,13 @@ class CycleService {
         }
         totalTime++;
       }
+
+      this.shouldStop = true; // <<<<<< sinaliza interrupção
+      await this.wsSerialProvider.disconnect();
+
+      const command = JSON.stringify({ cmd: 'cycle_stop' });
+      await this.wsSerialProvider.sendSerialData(command);
+      console.log('fim do ciclo');
     } else if (cmd === 'cycle_stop') {
       console.log('ciclo interrompido');
       this.shouldStop = true; // <<<<<< sinaliza interrupção
