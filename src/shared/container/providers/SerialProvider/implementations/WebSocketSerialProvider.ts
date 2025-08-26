@@ -12,6 +12,7 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
   private wss: WebSocketServer | null = null;
 
   public onSerialData?: (data: string) => void;
+  public onMessageFromPython?: (data: string) => void;
 
   private async openSerialPort(): Promise<void> {
     if (this.port && this.port.isOpen) return; // já aberta
@@ -50,8 +51,27 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
 
     // Servidor WebSocket
     this.wss = new WebSocketServer({ port: wsPort });
-    this.wss.on('connection', (ws: WebSocket) => {
+    this.wss.on('connection', (ws: WebSocket, req) => {
       console.log('Cliente conectado via WebSocket');
+
+      if (req.url === '/python') {
+        console.log('🔹 Conexão Python detectada');
+
+        // Envia pong automaticamente se receber ping
+        ws.on('ping', () => {
+          ws.pong();
+        });
+
+        ws.on('message', (msg: WebSocket.RawData) => {
+          const message = msg.toString();
+          // console.log('Python → Node.js:', message);
+
+          if (this.onMessageFromPython) {
+            this.onMessageFromPython(message);
+          }
+        });
+      }
+
       ws.on('close', () => console.log('Cliente desconectado'));
     });
 
