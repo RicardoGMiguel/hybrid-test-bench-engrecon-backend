@@ -23,8 +23,10 @@ serialRouter.post(
     [Segments.BODY]: {
       cmd: Joi.string().required(),
       mode: Joi.string().required(),
-      cardanSpeed: Joi.string().required(),
-      rampTime: Joi.string().required(),
+      cardanInitialSpeed: Joi.string().required(),
+      cardanEndSpeed: Joi.string().required(),
+      cardanTestTotalTime: Joi.string().required(),
+      couplingInstant: Joi.string().required(),
     },
   }),
   commandController.create,

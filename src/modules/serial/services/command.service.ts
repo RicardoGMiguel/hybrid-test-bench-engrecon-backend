@@ -5,15 +5,17 @@ import WebSocketSerialProvider from '@shared/container/providers/SerialProvider/
 
 export enum CouplingModesEnum {
   FREE = 'FREE',
-  SAME_SPEED = 'SAME_SPEED',
-  SAME_PHASE = 'SAME_PHASE',
+  LIGHT = 'LIGHT',
+  HEAVY = 'HEAVY',
 }
 
 interface IRequest {
   cmd: string;
   mode: CouplingModesEnum;
-  cardanSpeed: string;
-  rampTime: string;
+  cardanInitialSpeed: string;
+  cardanEndSpeed: string;
+  cardanTestTotalTime: string;
+  couplingInstant: string;
 }
 
 @injectable()
@@ -23,8 +25,8 @@ class CommandService {
     private wsSerialProvider: WebSocketSerialProvider,
   ) {}
 
-  public async execute({ cmd, mode, cardanSpeed, rampTime }: IRequest): Promise<string> {
-    const command = JSON.stringify({ cmd, mode, cardanSpeed, rampTime });
+  public async execute({ cmd, mode, cardanInitialSpeed, cardanEndSpeed, cardanTestTotalTime, couplingInstant }: IRequest): Promise<string> {
+    const command = JSON.stringify({ cmd, mode, cardanInitialSpeed, cardanEndSpeed, cardanTestTotalTime, couplingInstant });
 
     await this.wsSerialProvider.disconnect();
 

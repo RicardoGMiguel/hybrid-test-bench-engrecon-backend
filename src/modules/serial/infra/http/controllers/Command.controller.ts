@@ -5,15 +5,17 @@ import CommandService from '@modules/serial/services/command.service';
 
 export default class CommandController {
   public async create(req: Request, res: Response): Promise<Response> {
-    const { cmd, mode, cardanSpeed, rampTime } = req.body;
+    const { cmd, mode, cardanInitialSpeed, cardanEndSpeed, cardanTestTotalTime, couplingInstant } = req.body;
 
     const commandService = container.resolve(CommandService);
 
     const commandData = await commandService.execute({
       cmd,
       mode,
-      cardanSpeed,
-      rampTime,
+      cardanInitialSpeed,
+      cardanEndSpeed,
+      cardanTestTotalTime,
+      couplingInstant,
     });
 
     return res.json(commandData);
