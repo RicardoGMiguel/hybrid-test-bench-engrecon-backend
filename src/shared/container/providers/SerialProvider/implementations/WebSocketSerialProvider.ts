@@ -78,7 +78,7 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
     // Dados recebidos da serial
     this.parser.on('data', (data: string) => {
       const trimmed = data.trim();
-      console.log('Dado da serial:', trimmed);
+      // console.log('Dado da serial:', trimmed);
 
       if (this.onSerialData) {
         this.onSerialData(trimmed);

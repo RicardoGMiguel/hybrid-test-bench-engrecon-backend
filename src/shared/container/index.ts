@@ -4,6 +4,7 @@ import '../swagger';
 import '@shared/container/providers';
 import '@modules/users/users.module';
 import '@modules/serial/serial.module';
+import '@modules/reports/reports.module';
 
 import context from '@shared/container/modulesContext';
 import { env } from '@config/env';
