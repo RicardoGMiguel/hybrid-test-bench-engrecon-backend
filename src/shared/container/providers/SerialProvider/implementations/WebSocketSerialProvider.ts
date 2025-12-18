@@ -104,6 +104,7 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
           cardanSpeed: Number(newData?.state.cardanSpeed) || 0,
           motorSpeed: Number(newData?.state.motorSpeed) || 0,
           currentStepperMotorState: Number(newData?.state.stepperMotorState) || 0,
+          commandCouplingInstant: Number(newData?.state.couplingInstant) || 0,
         };
 
         // console.log('newReport:', newReport);

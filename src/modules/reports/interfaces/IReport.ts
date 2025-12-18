@@ -4,6 +4,7 @@ export interface IReport {
   cardanSpeed: number;
   motorSpeed: number;
   currentStepperMotorState: number;
+  commandCouplingInstant: number;
   created_at: Date;
   updated_at: Date;
 }

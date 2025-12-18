@@ -19,6 +19,9 @@ class Report implements IReport {
   @Column('numeric')
   currentStepperMotorState: number;
 
+  @Column('numeric')
+  commandCouplingInstant: number;
+
   @CreateDateColumn()
   created_at: Date;
 

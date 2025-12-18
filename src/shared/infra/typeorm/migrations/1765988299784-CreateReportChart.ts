@@ -8,6 +8,7 @@ export class CreateReportChart1765988299784 implements MigrationInterface {
         columns: [
           { name: 'id', type: 'uuid', isPrimary: true, generationStrategy: 'uuid', default: 'uuid_generate_v4()' },
           { name: 'time', type: 'numeric' },
+          { name: 'commandCouplingInstant', type: 'numeric' },
           { name: 'cardanSpeed', type: 'numeric' },
           { name: 'motorSpeed', type: 'numeric' },
           { name: 'currentStepperMotorState', type: 'numeric' },

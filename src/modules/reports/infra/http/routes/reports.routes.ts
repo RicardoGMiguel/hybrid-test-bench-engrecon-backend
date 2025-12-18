@@ -10,6 +10,8 @@ const reportsRouter = Router();
 
 reportsRouter.get('/', ensureAuthenticated, reportsController.index);
 
+reportsRouter.get('/chart', ensureAuthenticated, reportsController.indexChartData);
+
 reportsRouter.post(
   '/',
   celebrate({
@@ -18,6 +20,7 @@ reportsRouter.post(
       cardanSpeed: Joi.number().required(),
       motorSpeed: Joi.number().required(),
       currentStepperMotorState: Joi.number().required(),
+      commandCouplingInstant: Joi.number().required(),
     },
   }),
   reportsController.create,
