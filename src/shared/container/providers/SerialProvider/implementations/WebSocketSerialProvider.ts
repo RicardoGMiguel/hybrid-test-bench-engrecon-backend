@@ -1,12 +1,20 @@
 import { ReadlineParser, SerialPort } from 'serialport';
-import { singleton } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import WebSocket, { WebSocketServer } from 'ws';
+
+import ICreateReportDTO from '@modules/reports/dtos/ICreateReportDTO';
+import IReportsRepository from '@modules/reports/repositories/IReportsRepository';
 
 import { IConnectDTO } from '../dtos/IConnectDTO';
 import IWebSocketSerialProvider from '../models/IWebSockerSerialProvider';
 
 @singleton()
 class WebSocketSerialProvider implements IWebSocketSerialProvider {
+  constructor(
+    @inject('ReportsRepository')
+    private reportsRepository: IReportsRepository,
+  ) {}
+
   private port: SerialPort | null = null;
   private parser: ReadlineParser | null = null;
   private wss: WebSocketServer | null = null;
@@ -41,6 +49,9 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
   }
 
   public async connect({ onConnected }: IConnectDTO): Promise<void> {
+    //limpar os dados do relatório ao conectar
+    this.reportsRepository.deleteAll();
+
     // Abre a porta serial (reutilizando o método)
     await this.openSerialPort();
 
@@ -78,13 +89,28 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
     // Dados recebidos da serial
     this.parser.on('data', (data: string) => {
       const trimmed = data.trim();
-      // console.log('Dado da serial:', trimmed);
 
       if (this.onSerialData) {
         this.onSerialData(trimmed);
       }
 
       this.broadcast(trimmed);
+
+      try {
+        const newData = JSON.parse(trimmed);
+
+        const newReport: ICreateReportDTO = {
+          time: Number(newData?.state.time) || 0,
+          cardanSpeed: Number(newData?.state.cardanSpeed) || 0,
+          motorSpeed: Number(newData?.state.motorSpeed) || 0,
+          currentStepperMotorState: Number(newData?.state.stepperMotorState) || 0,
+        };
+
+        // console.log('newReport:', newReport);
+        this.reportsRepository.create(newReport);
+      } catch (e) {
+        console.log('erro', e);
+      }
     });
 
     console.log(`✔✔ WebSocket rodando na porta ${wsPort}`);
