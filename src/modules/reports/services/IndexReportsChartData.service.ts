@@ -14,6 +14,10 @@ class IndexReportsChartDataService {
   public async execute(): Promise<IReportsChartData> {
     const reports = await this.reportsRepository.findAll();
 
+    if (reports.length === 0) {
+      return {} as IReportsChartData;
+    }
+
     const newCommandCouplingInstant = Number(reports[0].commandCouplingInstant);
 
     const newCouplingInstant = Number(reports.find(item => item.currentStepperMotorState === 1)?.time) || 0;
