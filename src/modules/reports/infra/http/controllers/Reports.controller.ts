@@ -26,7 +26,7 @@ export default class ReportsController {
   }
 
   public async create(req: Request, res: Response): Promise<Response> {
-    const { time, cardanSpeed, motorSpeed, currentStepperMotorState, commandCouplingInstant } = req.body;
+    const { time, cardanSpeed, motorSpeed, actuatorState, commandCouplingInstant } = req.body;
 
     const createReportService = container.resolve(CreateReportService);
 
@@ -34,7 +34,7 @@ export default class ReportsController {
       time,
       cardanSpeed,
       motorSpeed,
-      currentStepperMotorState,
+      actuatorState,
       commandCouplingInstant,
     });
 

@@ -11,7 +11,7 @@ export class CreateReportChart1765988299784 implements MigrationInterface {
           { name: 'commandCouplingInstant', type: 'numeric' },
           { name: 'cardanSpeed', type: 'numeric' },
           { name: 'motorSpeed', type: 'numeric' },
-          { name: 'currentStepperMotorState', type: 'numeric' },
+          { name: 'actuatorState', type: 'numeric' },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
         ],

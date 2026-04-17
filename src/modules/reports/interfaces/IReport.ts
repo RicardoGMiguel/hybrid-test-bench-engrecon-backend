@@ -3,7 +3,7 @@ export interface IReport {
   time: number;
   cardanSpeed: number;
   motorSpeed: number;
-  currentStepperMotorState: number;
+  actuatorState: number;
   commandCouplingInstant: number;
   created_at: Date;
   updated_at: Date;

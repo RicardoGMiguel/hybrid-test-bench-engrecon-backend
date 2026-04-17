@@ -21,14 +21,8 @@ class ReportsRepository implements IReportsRepository {
     return reports;
   }
 
-  public async create({
-    time,
-    cardanSpeed,
-    motorSpeed,
-    currentStepperMotorState,
-    commandCouplingInstant,
-  }: ICreateReportDTO): Promise<IReport> {
-    const report = this.ormRepository.create({ time, cardanSpeed, motorSpeed, currentStepperMotorState, commandCouplingInstant });
+  public async create({ time, cardanSpeed, motorSpeed, actuatorState, commandCouplingInstant }: ICreateReportDTO): Promise<IReport> {
+    const report = this.ormRepository.create({ time, cardanSpeed, motorSpeed, actuatorState, commandCouplingInstant });
     await this.ormRepository.save(report);
 
     return report;

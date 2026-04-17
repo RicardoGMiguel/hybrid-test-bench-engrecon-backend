@@ -17,7 +17,7 @@ class Report implements IReport {
   motorSpeed: number;
 
   @Column('numeric')
-  currentStepperMotorState: number;
+  actuatorState: number;
 
   @Column('numeric')
   commandCouplingInstant: number;

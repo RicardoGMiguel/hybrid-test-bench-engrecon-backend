@@ -20,7 +20,7 @@ class IndexReportsChartDataService {
 
     const newCommandCouplingInstant = Number(reports[0].commandCouplingInstant);
 
-    const newCouplingInstant = Number(reports.find(item => item.currentStepperMotorState === 1)?.time) || 0;
+    const newCouplingInstant = Number(reports.find(item => item.actuatorState === 1)?.time) || 0;
 
     const newSpeedChartData: ISpeedChart[] = reports.map(report => {
       const data: ISpeedChart = {

@@ -7,7 +7,7 @@ interface IRequest {
   time: number;
   cardanSpeed: number;
   motorSpeed: number;
-  currentStepperMotorState: number;
+  actuatorState: number;
   commandCouplingInstant: number;
 }
 
@@ -18,12 +18,12 @@ class CreateReportService {
     private reportsRepository: IReportsRepository,
   ) {}
 
-  public async execute({ time, cardanSpeed, motorSpeed, currentStepperMotorState, commandCouplingInstant }: IRequest): Promise<IReport> {
+  public async execute({ time, cardanSpeed, motorSpeed, actuatorState, commandCouplingInstant }: IRequest): Promise<IReport> {
     const report = await this.reportsRepository.create({
       time,
       cardanSpeed,
       motorSpeed,
-      currentStepperMotorState,
+      actuatorState,
       commandCouplingInstant,
     });
 

@@ -19,7 +19,7 @@ reportsRouter.post(
       time: Joi.number().required(),
       cardanSpeed: Joi.number().required(),
       motorSpeed: Joi.number().required(),
-      currentStepperMotorState: Joi.number().required(),
+      actuatorState: Joi.number().required(),
       commandCouplingInstant: Joi.number().required(),
     },
   }),

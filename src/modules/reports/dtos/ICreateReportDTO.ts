@@ -2,6 +2,6 @@ export default interface ICreateReportDTO {
   time: number;
   cardanSpeed: number;
   motorSpeed: number;
-  currentStepperMotorState: number;
+  actuatorState: number;
   commandCouplingInstant: number;
 }
