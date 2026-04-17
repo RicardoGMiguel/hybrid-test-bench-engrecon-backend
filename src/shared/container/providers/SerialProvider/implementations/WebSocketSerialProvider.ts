@@ -103,7 +103,7 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
           time: Number(newData?.state.time) || 0,
           cardanSpeed: Number(newData?.state.cardanSpeed) || 0,
           motorSpeed: Number(newData?.state.motorSpeed) || 0,
-          actuatorState: Number(newData?.state.actuatorState) || 0,
+          actuatorState: newData?.state.actuatorState === 'on' ? 1 : 0,
           commandCouplingInstant: Number(newData?.state.couplingInstant) || 0,
         };
 
