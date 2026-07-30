@@ -1,5 +1,5 @@
-import { SendRawEmailCommand, SES } from '@aws-sdk/client-ses';
-import nodemailer, { Transporter } from 'nodemailer';
+// import { SendRawEmailCommand, SES } from '@aws-sdk/client-ses';
+import { Transporter } from 'nodemailer';
 import { inject, injectable } from 'tsyringe';
 
 import ISendMailDTO from '@shared/container/providers/MailProvider/dtos/ISendMailDTO';
@@ -16,16 +16,15 @@ export default class SESMailProvider implements IMailProvider {
     @inject('MailTemplateProvider')
     private mailTemplateProvider: IMailTemplateProvider,
   ) {
-    const ses = new SES({
-      region: 'us-east-2',
-    });
-
-    this.client = nodemailer.createTransport({
-      SES: {
-        ses,
-        aws: { SendRawEmailCommand },
-      },
-    });
+    // const ses = new SES({
+    //   region: 'us-east-2',
+    // });
+    // this.client = nodemailer.createTransport({
+    //   SES: {
+    //     ses,
+    //     aws: { SendRawEmailCommand },
+    //   },
+    // });
   }
 
   public async sendMail({ to, from, subject, templateData }: ISendMailDTO): Promise<void> {

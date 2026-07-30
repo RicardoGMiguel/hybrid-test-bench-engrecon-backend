@@ -18,7 +18,7 @@ class IndexReportsChartDataService {
       return {} as IReportsChartData;
     }
 
-    const newCommandCouplingInstant = Number(reports[0].commandCouplingInstant);
+    const newCommandCouplingInstant = Number(reports[1].commandCouplingInstant);
 
     const newCouplingInstant = Number(reports.find(item => item.actuatorState === 1)?.time) || 0;
 

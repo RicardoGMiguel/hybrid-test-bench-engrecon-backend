@@ -16,7 +16,11 @@ class ReportsRepository implements IReportsRepository {
   }
 
   public async findAll(): Promise<IReport[]> {
-    const reports = await this.ormRepository.find();
+    const reports = await this.ormRepository.find({
+      order: {
+        time: 'ASC',
+      },
+    });
 
     return reports;
   }
