@@ -32,6 +32,7 @@ class CommandService {
     await this.wsOpcuaProvider.disconnect();
 
     await this.wsOpcuaProvider.connect({
+      mustRegister: true,
       onConnected: () => {
         console.log('Servidor iniciado com sucesso!');
       },

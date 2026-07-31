@@ -96,7 +96,7 @@ class WebSocketOPCUAProvider implements IWebSocketSerialProvider {
     });
   }
 
-  private processState(): void {
+  private processState(params?: { mustRegister?: boolean }): void {
     const payload = JSON.stringify({
       state: this.state,
     });
@@ -109,22 +109,24 @@ class WebSocketOPCUAProvider implements IWebSocketSerialProvider {
 
     this.broadcast(payload);
 
-    try {
-      const newReport: ICreateReportDTO = {
-        time: Number(this.state.state.timeCounter) || 0,
-        cardanSpeed: Number(this.state.state.cardanSpeed) || 0,
-        motorSpeed: Number(this.state.state.motorSpeed) || 0,
-        actuatorState: this.state.state.actuatorState ? 1 : 0,
-        commandCouplingInstant: Number(this.state.state.couplingInstant) || 0,
-      };
+    if (params?.mustRegister) {
+      try {
+        const newReport: ICreateReportDTO = {
+          time: Number(this.state.state.timeCounter) || 0,
+          cardanSpeed: Number(this.state.state.cardanSpeed) || 0,
+          motorSpeed: Number(this.state.state.motorSpeed) || 0,
+          actuatorState: this.state.state.actuatorState ? 1 : 0,
+          commandCouplingInstant: Number(this.state.state.couplingInstant) || 0,
+        };
 
-      this.reportsRepository.create(newReport);
-    } catch (error) {
-      console.log('Erro ao criar relatório:', error);
+        this.reportsRepository.create(newReport);
+      } catch (error) {
+        console.log('Erro ao criar relatório:', error);
+      }
     }
   }
 
-  public async connect({ onConnected }: IConnectDTO): Promise<void> {
+  public async connect({ onConnected, mustRegister }: IConnectDTO): Promise<void> {
     this.reportsRepository.deleteAll();
 
     await this.openOPCUAConnection();
@@ -181,19 +183,7 @@ class WebSocketOPCUAProvider implements IWebSocketSerialProvider {
     await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.TimeCounter', value => {
       this.state.state.timeCounter = Number(value);
 
-      this.processState();
-    });
-
-    await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.CycleTotalTime', value => {
-      this.state.state.totalTime = Number(value);
-
-      this.processState();
-    });
-
-    await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.CycleTotalTime', value => {
-      this.state.state.totalTime = Number(value);
-
-      this.processState();
+      this.processState({ mustRegister: mustRegister });
     });
 
     await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.CurrentCardanSpeed', value => {
@@ -234,6 +224,12 @@ class WebSocketOPCUAProvider implements IWebSocketSerialProvider {
 
     await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.RegenerationState', value => {
       this.state.state.regenerationState = value;
+
+      this.processState();
+    });
+
+    await this.monitorTag('ns=4;s=|var|XP340.Application.OPCUA.CycleTotalTime', value => {
+      this.state.state.totalTime = Number(value);
 
       this.processState();
     });

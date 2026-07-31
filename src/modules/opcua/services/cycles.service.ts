@@ -39,6 +39,7 @@ class CycleService {
     await this.wsOpcuaProvider.disconnect();
 
     await this.wsOpcuaProvider.connect({
+      mustRegister: false,
       onConnected: () => {
         console.log('Servidor iniciado com sucesso!');
       },

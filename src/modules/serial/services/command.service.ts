@@ -41,6 +41,7 @@ class CommandService {
       };
 
       await this.wsSerialProvider.connect({
+        mustRegister: true,
         onConnected: () => {
           console.log('Servidor iniciado com sucesso!');
         },

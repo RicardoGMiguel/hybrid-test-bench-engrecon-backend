@@ -48,7 +48,7 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
     });
   }
 
-  public async connect({ onConnected }: IConnectDTO): Promise<void> {
+  public async connect({ onConnected, mustRegister }: IConnectDTO): Promise<void> {
     //limpar os dados do relatório ao conectar
     this.reportsRepository.deleteAll();
 
@@ -96,21 +96,23 @@ class WebSocketSerialProvider implements IWebSocketSerialProvider {
 
       this.broadcast(trimmed);
 
-      try {
-        const newData = JSON.parse(trimmed);
+      if (mustRegister) {
+        try {
+          const newData = JSON.parse(trimmed);
 
-        const newReport: ICreateReportDTO = {
-          time: Number(newData?.state.time) || 0,
-          cardanSpeed: Number(newData?.state.cardanSpeed) || 0,
-          motorSpeed: Number(newData?.state.motorSpeed) || 0,
-          actuatorState: newData?.state.actuatorState === 'on' ? 1 : 0,
-          commandCouplingInstant: Number(newData?.state.couplingInstant) || 0,
-        };
+          const newReport: ICreateReportDTO = {
+            time: Number(newData?.state.time) || 0,
+            cardanSpeed: Number(newData?.state.cardanSpeed) || 0,
+            motorSpeed: Number(newData?.state.motorSpeed) || 0,
+            actuatorState: newData?.state.actuatorState === 'on' ? 1 : 0,
+            commandCouplingInstant: Number(newData?.state.couplingInstant) || 0,
+          };
 
-        // console.log('newReport:', newReport);
-        this.reportsRepository.create(newReport);
-      } catch (e) {
-        console.log('erro', e);
+          // console.log('newReport:', newReport);
+          this.reportsRepository.create(newReport);
+        } catch (e) {
+          console.log('erro', e);
+        }
       }
     });
 

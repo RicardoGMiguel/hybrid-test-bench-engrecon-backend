@@ -38,6 +38,7 @@ class CycleService {
     await this.wsSerialProvider.disconnect();
 
     await this.wsSerialProvider.connect({
+      mustRegister: false,
       onConnected: () => {
         console.log('Servidor iniciado com sucesso!');
       },
